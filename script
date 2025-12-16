@@ -7,3 +7,11 @@ fun split(data)= (data splitBy (" ")) filter (!isEmpty($) )
     data: (split($)[0])[3 to (sizeOf(split($)[0])-1)]++"|"++(split($)[3])[2 to (sizeOf(split($)[3])-1)] ++ "|" ++ (split($)[2])[0 to 7]
     
 }
+
+con
+%dw 2.0
+output application/json
+---
+payload.CI_ANNUAL_LISTPRICE.MsgData.Transaction.*CI_ANNUAL_PRICE map ((item, index) -> item.*CI_ANNUAL_PRICE_DET map{
+    data: $.PRODUCT_ID ++ "|"++  $.UNIT_OF_MEASURE ++ "|" ++ $.LIST_PRICE ++ "|"++ (item.EFFDT as Date {format: "yyyy-MM-dd"} as String {format: "yyyyMMdd"}) ++ "|"++ item.CURRENCY_CD
+} )
