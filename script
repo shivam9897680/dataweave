@@ -1,0 +1,9 @@
+order stock:-
+%dw 2.0
+output application/json
+fun split(data)= (data splitBy (" ")) filter (!isEmpty($) )
+---
+(payload splitBy "\n") - (payload splitBy "\n")[0]  map {
+    data: (split($)[0])[3 to (sizeOf(split($)[0])-1)]++"|"++(split($)[3])[2 to (sizeOf(split($)[3])-1)] ++ "|" ++ (split($)[2])[0 to 7]
+    
+}
