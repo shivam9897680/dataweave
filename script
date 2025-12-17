@@ -15,3 +15,14 @@ output application/json
 payload.CI_ANNUAL_LISTPRICE.MsgData.Transaction.*CI_ANNUAL_PRICE map ((item, index) -> item.*CI_ANNUAL_PRICE_DET map{
     data: $.PRODUCT_ID ++ "|"++  $.UNIT_OF_MEASURE ++ "|" ++ $.LIST_PRICE ++ "|"++ (item.EFFDT as Date {format: "yyyy-MM-dd"} as String {format: "yyyyMMdd"}) ++ "|"++ item.CURRENCY_CD
 } )
+
+
+acc:-
+%dw 2.0
+import * from dw::core::Strings
+output application/json
+fun split(data)= (data splitBy (" ")) filter (!isEmpty($) )
+---
+((payload splitBy  "\n")  filter ((item, index) -> item contains  ("EUR€") )) map{
+    data: substringAfter(split($)[0], "000") ++ "|" ++ (split((substringBefore($ ,"EUR€") ))[1 to -1] joinBy  " ")++"|" ++ substringAfter(split($)[0], "000")++"|"++ (split($)[-1])[2 to 12] ++ "|"++"|"++ substringAfter(split($)[0], "000") ++ "|" ++ "true" ++ "|"++"false"++ "|"++ split($)[6][0 to 2]
+}
