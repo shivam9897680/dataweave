@@ -26,3 +26,24 @@ fun split(data)= (data splitBy (" ")) filter (!isEmpty($) )
 ((payload splitBy  "\n")  filter ((item, index) -> item contains  ("EUR€") )) map{
     data: substringAfter(split($)[0], "000") ++ "|" ++ (split((substringBefore($ ,"EUR€") ))[1 to -1] joinBy  " ")++"|" ++ substringAfter(split($)[0], "000")++"|"++ (split($)[-1])[2 to 12] ++ "|"++"|"++ substringAfter(split($)[0], "000") ++ "|" ++ "true" ++ "|"++"false"++ "|"++ split($)[6][0 to 2]
 }
+
+
+
+
+
+
+%dw 2.0
+import * from dw::core::Strings
+output text/plain
+fun split(data)= (data splitBy (" ")) filter (!isEmpty($) )
+var inp1= ((payload splitBy  "\n")  filter ((item, index) -> !((item contains  ("EUR€")) or (item contains  ("USD"))) ))[0]
+var inp2= ((payload splitBy  "\n")  filter ((item, index) -> !((item contains  ("EUR€")) or (item contains  ("USD"))) ))[1]
+---
+([{
+data: (split(inp1)[0][3 to 10] ++"|"++ "false" ++ "|"++ "true"++"|"++ split(inp1)[8] ++ "|"++ "DE"++ "|" ++ (split(inp1)[1 to 5] joinBy  " ") ++ "|" ++ (split(inp1)[6 to 7] joinBy  " ")++"|"++"|"++ split(inp1)[0][3 to 10]++ "|"++ (split(inp1)[11] default"") ++"|"++"|"++"|"++"|"++"|"++"true")
+},
+{
+    data: (split(inp2)[1] ++"|"++ "false" ++ "|"++ "true"++"|"++ split(inp2)[9] ++ "|"++ "DE"++ "|" ++ (split(inp2)[2 to 6] joinBy  " ") ++ "|" ++ (split(inp2)[7 to 8] joinBy  " ")++"|"++"|"++ split(inp2)[1]++ "|"++ split(inp2)[12]++"|"++ (split(inp2)[13 to 16] joinBy " ") ++ "|"++"|"++"1"++"|"++"|"++"|"++ split(inp2)[17] ++"|"++ "true")
+}
+
+]).data joinBy  "\n"
